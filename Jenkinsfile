@@ -5,8 +5,8 @@ pipeline {
         }
     }
     environment {
-        IMAGE_NAME = 'alianib/my-python-app'  // Remplace 'mylogin' par ton vrai login Docker Hub
-        DOCKER_LOGIN = "alianib"  // Remplace 'mylogin' par ton vrai login Docker Hub
+        IMAGE_NAME = 'alianib/my-second-python-app' 
+        DOCKER_LOGIN = "alianib" 
     }
     stages {
         stage('Définir BUILD_VERSION') {
@@ -22,6 +22,7 @@ pipeline {
                 stage('Linting avec Flake8') {
                     steps {
                         sh 'python3 --version'
+                        sh 'pip install flake8'  // Installation de Flake8
                         sh 'python3 -m flake8 --version'
                         sh 'python3 -m flake8 . --count --show-source --statistics || true'
                     }
