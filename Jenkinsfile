@@ -1,38 +1,54 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.8-alpine'
-        }
-    }
+    agent any
+
     environment {
-        IMAGE_NAME = 'alianib/my-second-python-app' 
-        DOCKER_LOGIN = "alianib" 
+        IMAGE_NAME = "alianib/my-python-application"
+        DOCKER_LOGIN = "" // Initialisation de la variable
     }
+
     stages {
-        stage('Définir BUILD_VERSION') {
+        stage('Init') {
             steps {
                 script {
-                    env.BUILD_VERSION = "1.0.${env.BUILD_NUMBER}"
+                    env.BUILD_VERSION = "1.0.${BUILD_NUMBER}" // Définition dynamique
                 }
             }
         }
 
-        stage('Analyse statique et Tests') {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/user/repo.git'  // Remplace par ton repo
+            }
+        }
+
+        stage('Static Code Analysis (Flake8)') {
             parallel {
-                stage('Linting avec Flake8') {
+                stage('Flake8 Linting') {
                     steps {
-                        sh 'python3 --version'
-                        sh 'pip install --user -r requirements.txt'
-                        sh 'pip install flake8'  // Installation de Flake8
-                        sh 'python3 -m flake8 --version'
-                        sh 'python3 -m flake8 . --count --show-source --statistics || true'
+                        script {
+                            try {
+                                sh 'python3 --version'
+                                sh 'python3 -m flake8 --version'
+                                sh 'python3 -m flake8 . --count --show-source --statistics || true'
+                            } catch (Exception e) {
+                                echo "Flake8 a retourné des erreurs mais n'a pas bloqué le pipeline."
+                            }
+                        }
                     }
                 }
-                stage('Tests unitaires avec Pytest') {
+
+                stage('Unit Tests (Pytest)') {
                     steps {
-                        sh 'pip install -r requirements.txt'
-                        sh 'pip install pytest'
-                        sh 'pytest | tee report.txt'
+                        script {
+                            try {
+                                //sh 'pip install -r requirements.txt'
+                                //sh 'pip install pytest'
+                                sh 'pytest | tee report.txt'
+                            } catch (Exception e) {
+                                echo "Les tests unitaires ont échoué!"
+                                currentBuild.result = 'UNSTABLE'  // Marque le build comme instable si les tests échouent
+                            }
+                        }
                     }
                     post {
                         always {
@@ -46,15 +62,27 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASS')]) {
+                    withCredentials([string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASS'),
+                                     string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_LOGIN_TEMP')]) {
+                        env.DOCKER_LOGIN = DOCKER_LOGIN_TEMP // Stockage dans une variable d'environnement Jenkins
+
                         sh """
                             docker build -t ${IMAGE_NAME}:${env.BUILD_VERSION} .
-                            docker login -u ${DOCKER_LOGIN} -p $DOCKER_PASS
+                            docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
                             docker push ${IMAGE_NAME}:${env.BUILD_VERSION}
                         """
                     }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline exécuté avec succès !"
+        }
+        failure {
+            echo "Le pipeline a échoué. Vérifiez les logs."
         }
     }
 }
