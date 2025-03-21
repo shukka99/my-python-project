@@ -17,7 +17,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/user/repo.git'  // Remplace par ton repo
+                git 'https://github.com/BAliani/my-python-project.git'  // Remplace par ton repo
             }
         }
 
