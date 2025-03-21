@@ -15,11 +15,11 @@ pipeline {
             }
         }
 
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/BAliani/my-python-project.git'  // Remplace par ton repo
-            }
-        }
+    //    stage('Checkout Code') {
+     //       steps {
+       //         git 'https://github.com/BAliani/my-python-project.git'  // Remplace par ton repo
+         //   }
+        //}
 
         stage('Static Code Analysis (Flake8)') {
             parallel {
