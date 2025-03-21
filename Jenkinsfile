@@ -22,6 +22,7 @@ pipeline {
                 stage('Linting avec Flake8') {
                     steps {
                         sh 'python3 --version'
+                        sh 'pip install -r requirements.txt'
                         sh 'pip install flake8'  // Installation de Flake8
                         sh 'python3 -m flake8 --version'
                         sh 'python3 -m flake8 . --count --show-source --statistics || true'
