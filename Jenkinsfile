@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "alianib/my-python-application"
-        DOCKER_LOGIN = "" // Initialisation de la variable
+        DOCKER_LOGIN = "alianib" // Initialisation de la variable
     }
 
     stages {
@@ -62,10 +62,7 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASS'),
-                                     string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_LOGIN_TEMP')]) {
-                        env.DOCKER_LOGIN = DOCKER_LOGIN_TEMP // Stockage dans une variable d'environnement Jenkins
-
+                    withCredentials([string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASS')]) {
                         sh """
                             docker build -t ${IMAGE_NAME}:${env.BUILD_VERSION} .
                             docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
