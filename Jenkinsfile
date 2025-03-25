@@ -40,14 +40,11 @@ pipeline {
 		stage('Publish image') {
 			steps {
 				withCredentials([string(credentialsId:'CHARLIE_DOCKER_PASSWORD', variable:'DOCKER_PASS')]) {
+					sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 				}
-				sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-				echo "Construire l'image Docker avec le BUILD_NUMBER de Jenkins"
-				//docker build -t shukka/my-python-app:$BUILD_NUMBER .
-				echo "Se connecter à Docker Hub en utilisant le token d'accès"
-				//docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
-				echo "Pousser l'image sur Docker Hub"
-				//docker push shukka/my-python-app:$BUILD_NUMBER
+				docker build -t shukka/my-python-app:$BUILD_NUMBER .
+				docker push shukka/my-python-app:$BUILD_NUMBER
+				}
 			}
 		}
 	}
