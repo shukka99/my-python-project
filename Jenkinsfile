@@ -1,36 +1,38 @@
 pipeline {
 	agent any
 	environment {
-        DOCKER_USER='shukka'
+        DOCKER_USER = 'shukka'
 	}
 	stages {
-		parallel {
-			stage('Check') {
-				steps {
-					sh 'python3 --version'
-					sh 'python3 -m flake8 --version'
-					echo "Lancer l'analyse"
-					sh 'python3 -m flake8 . --count --show-source --statistics || true'
-				}
-				post {
-					success {
-						echo "Check successful"
+		stage('Parallel Tasks') {
+			parallel {
+				stage('Check') {
+					steps {
+						sh 'python3 --version'
+						sh 'python3 -m flake8 --version'
+						echo "Lancer l'analyse"
+						sh 'python3 -m flake8 . --count --show-source --statistics || true'
 					}
-					failure {
-						echo "Check failed"
+					post {
+						success {
+							echo "Check successful"
+						}
+						failure {
+							echo "Check failed"
+						}
 					}
 				}
-			}
-			stage('Unit tests') {
-				steps {
-					sh 'pytest | tee report.txt'
-				}
-				post {
-					success {
-						echo "Unit tests successful"
+				stage('Unit tests') {
+					steps {
+						sh 'pytest | tee report.txt'
 					}
-					failure {
-						echo "Unit tests failed"
+					post {
+						success {
+							echo "Unit tests successful"
+						}
+						failure {
+							echo "Unit tests failed"
+						}
 					}
 				}
 			}
