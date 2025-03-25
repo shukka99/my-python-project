@@ -41,11 +41,11 @@ pipeline {
 		stage('Publish image') {
 			steps {
 				echo "Construire l'image Docker avec le BUILD_NUMBER de Jenkins"
-				docker build -t shukka/my-python-app:$BUILD_NUMBER .
+				//docker build -t shukka/my-python-app:$BUILD_NUMBER .
 				echo "Se connecter à Docker Hub en utilisant le token d'accès"
-				docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
+				//docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
 				echo "Pousser l'image sur Docker Hub"
-				docker push shukka/my-python-app:$BUILD_NUMBER
+				//docker push shukka/my-python-app:$BUILD_NUMBER
 			}
 		}
 	}
