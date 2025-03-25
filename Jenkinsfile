@@ -36,7 +36,7 @@ pipeline {
                     echo "Unit tests failed"
 				}
 			}
-		}
+	    }
 		stage('Publish image') {
 			steps {
 				withCredentials([string(credentialsId:'CHARLIE_DOCKER_PASSWORD', variable:'DOCKER_PASS')]) {
