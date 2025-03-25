@@ -42,8 +42,8 @@ pipeline {
 				withCredentials([string(credentialsId:'CHARLIE_DOCKER_PASSWORD', variable:'DOCKER_PASS')]) {
 					sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 				}
-				docker build -t shukka/my-python-app:$BUILD_NUMBER .
-				docker push shukka/my-python-app:$BUILD_NUMBER
+				sh 'docker build -t shukka/my-python-app:$BUILD_NUMBER .'
+				sh 'docker push shukka/my-python-app:$BUILD_NUMBER'
 				}
 			}
 		}
