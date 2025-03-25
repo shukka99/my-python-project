@@ -1,8 +1,8 @@
 pipeline {
 	agent any
 	environment {
-        DOCKER_LOGIN=
-        DOCKER_PASS=
+        DOCKER_LOGIN=shukka
+        DOCKER_PASS=test
 	}
 	stages {
 		stage('Check') {
